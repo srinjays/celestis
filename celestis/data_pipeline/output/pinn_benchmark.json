@@ -1,0 +1,22 @@
+[
+  {
+    "label": "Train Set (in-distribution)",
+    "n_samples": 253,
+    "mae_residual_km": 0.10817,
+    "mae_total_km": 0.10817,
+    "r2_residual": 0.3025,
+    "r2_total": 0.1267,
+    "mape_pct": 117272.35,
+    "physics_violations": 43
+  },
+  {
+    "label": "OOD Test Set (unseen storms)",
+    "n_samples": 41,
+    "mae_residual_km": 0.10555,
+    "mae_total_km": 0.10555,
+    "r2_residual": 0.4333,
+    "r2_total": 0.6305,
+    "mape_pct": 42062.35,
+    "physics_violations": 3
+  }
+]
