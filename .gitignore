@@ -31,11 +31,6 @@ desktop.ini
 # Logs
 *.log
 
-# Model weights (large binaries)
-*.pkl
-*.pt
-*.pth
-
 # Data cache
 data_pipeline/__pycache__/
 data_pipeline/output/cache/
