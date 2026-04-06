@@ -1,0 +1,8 @@
+{
+  "cv_mae_mean": 0.4149,
+  "cv_mae_std": 0.2979,
+  "cv_rmse_mean": 0.8677,
+  "cv_rmse_std": 0.5957,
+  "n_folds": 5,
+  "model": "GBM-global"
+}

@@ -1,0 +1,7 @@
+label,N,MAE_km,RMSE_km,R2,MAPE_pct,MAE_CI_95,pct_improvement_vs_physics
+Physics-only (train),60,0.2346,0.7224,-0.3115,102.82,"[0.0966, 0.4352]",0.0
+Single GBM — prior work (train),60,0.0124,0.0152,0.9994,35.71,"[0.0102, 0.0146]",94.7
+Phase-Aware GBM — ours (train),60,0.0456,0.0631,0.99,133.36,"[0.0349, 0.0568]",80.6
+Physics-only (OOD),13,0.1981,0.383,-0.2126,46232.93,"[0.0684, 0.4007]",15.6
+Single GBM — prior work (OOD),13,0.1814,0.2575,0.4518,123110.75,"[0.0875, 0.2849]",22.7
+Phase-Aware GBM — ours (OOD),13,0.0979,0.1662,0.7715,482932.04,"[0.0370, 0.1814]",58.3
