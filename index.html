@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I-STAR Mission Control — ISRO</title>
+  <link rel="stylesheet" href="style.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="istar_config.js"></script>
+  <!-- Three.js + OrbitControls + satellite.js (for globe only) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/satellite.js@4.1.3/dist/satellite.min.js"></script>
+
+</head>
+
+<body>
+  <!-- Spline 3D Background -->
+  <div class="spline-bg" id="spline-bg">
+    <iframe src="https://my.spline.design/earthwallpaper-7eMaOly5Y1W3wCk8qTtMMGBj/" frameborder="0" width="100%"
+      height="100%" loading="lazy" title="Earth background" style="pointer-events:none; display:block; border:none;">
+    </iframe>
+  </div>
+
+  <!-- GOD-VIEW TELEMETRY BANNER -->
+  <div class="god-banner" id="god-banner" style="-webkit-app-region:drag">
+
+    <!-- LEFT: Brand -->
+    <div style="display:flex; align-items:center; flex:1; padding-left:5px;">
+      <div class="god-item">
+        <span class="brand-icon">🛰️</span>
+        <span class="brand-name">CELESTIS</span>
+      </div>
+    </div>
+
+    <!-- CENTER: Telemetry data -->
+    <div style="display:flex; align-items:center; justify-content:center; flex:2; gap:4px;">
+      <div class="god-item">
+        <span class="god-label">AGENCY</span>
+        <span class="god-val">ISRO ISTAR</span>
+      </div>
+      <div class="god-item">
+        <span class="god-label">FLEET STATUS</span>
+        <span class="god-val god-live" id="god-fleet">NOMINAL</span>
+      </div>
+      <div class="god-sep"></div>
+      <div class="god-item">
+        <span class="god-label">Kp INDEX</span>
+        <span class="god-val" id="god-kp">—</span>
+      </div>
+      <div class="god-item">
+        <span class="god-label">SOLAR WIND</span>
+        <span class="god-val" id="god-vsw">— km/s</span>
+      </div>
+      <div class="god-item">
+        <span class="god-label">CME ETA</span>
+        <span class="god-val" id="god-cme-eta">—</span>
+      </div>
+      <div class="god-sep"></div>
+      <div class="god-item">
+        <span class="god-label">ML MODEL</span>
+        <span class="god-val god-ml">Phase-Aware GBM</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: Globe button + Live button + IST clock + Win controls -->
+    <div style="display:flex; align-items:center; justify-content:flex-end; flex:1; gap:10px; padding-right:10px;">
+      <div style="-webkit-app-region:no-drag;">
+        <button class="globe-launch-btn" id="globe-launch-btn" onclick="openGlobe()" title="Open 3D Orbital Globe">
+          <span class="globe-btn-icon">🌍</span>
+          <span class="globe-btn-label">3D GLOBE</span>
+        </button>
+      </div>
+      <div style="-webkit-app-region:no-drag;">
+        <button class="live-btn" id="live-mode-btn" onclick="toggleLive()">
+          <div class="live-btn-dot" id="live-dot"></div>
+          <div class="live-btn-inner">
+            <span id="live-btn-label">CONNECT LIVE</span>
+            <span class="live-btn-sub" id="live-updated">NOAA SWPC SECURE FEED</span>
+          </div>
+        </button>
+      </div>
+      <div
+        style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center; font-family:var(--font-mono); -webkit-app-region:no-drag;">
+        <span id="ist-time"
+          style="font-size:14px; font-weight:700; color:var(--cyan); letter-spacing:0.05em; line-height:1;">--:--:--</span>
+        <span
+          style="font-size:9px; color:var(--text-muted); font-weight:600; letter-spacing:0.08em; line-height:1; margin-top:3px;">IST
+          (UTC+5:30)</span>
+      </div>
+      <div class="win-controls" id="win-controls" style="display:flex; -webkit-app-region:no-drag;">
+        <button class="win-btn" title="Minimize" onclick="window.celestisApp?.minimize()">&#8722;</button>
+        <button class="win-btn" title="Maximize" onclick="window.celestisApp?.maximize()">&#9633;</button>
+        <button class="win-btn win-close" title="Close" onclick="window.celestisApp?.close()">&#10005;</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MAIN 4-QUADRANT DASHBOARD -->
+  <main class="main-dashboard">
+
+    <!-- Q1: FLEET READINESS (Top Left) -->
+    <section class="quadrant q-fleet">
+      <div class="q-header">
+        <h2>🌐 I-STAR Fleet Readiness</h2>
+        <span class="q-meta">36 Active Nodes · 3 Orbital Planes · ~500km LEO</span>
+      </div>
+      <div class="q-body">
+        <div class="fleet-stats">
+          <div class="fs-item"><span class="fs-val text-green" id="fs-nominal">36</span><span
+              class="fs-label">Nominal</span></div>
+          <div class="fs-item"><span class="fs-val text-amber" id="fs-drifting">0</span><span
+              class="fs-label">Drifting</span></div>
+          <div class="fs-item"><span class="fs-val text-red" id="fs-critical">0</span><span
+              class="fs-label">Critical</span></div>
+          <div class="fs-item"><span class="fs-val text-cyan" id="fs-maneuver">0</span><span
+              class="fs-label">Maneuvering</span></div>
+        </div>
+        <div class="fleet-grid-wrap">
+          <div class="fleet-grid" id="fleet-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+        <div class="coverage-status">
+          <span class="cov-icon">📡</span>
+          <div class="cov-text">
+            <strong>Indian Subcontinent Coverage</strong>
+            <span id="cov-pct">100% Optimal (No Gaps Detected)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Q2: ATMOSPHERIC INTELLIGENCE (Top Right) -->
+    <section class="quadrant q-atmos">
+      <div class="q-header">
+        <h2>🌪️ Atmospheric Intelligence</h2>
+        <span class="q-meta">Thermospheric Density & Storm Phase Tracking</span>
+      </div>
+      <div class="q-body">
+        <div class="atmos-cards">
+          <div class="acard">
+            <div class="acard-label">Space Weather Phase</div>
+            <div class="acard-val text-amber" id="at-phase">QUIET</div>
+            <div class="acard-sub">Phase-Aware ML Classifier</div>
+          </div>
+          <div class="acard">
+            <div class="acard-label">NRLMSISE-00 Baseline</div>
+            <div class="acard-val" id="at-rho-base">1.8e-13</div>
+            <div class="acard-sub">kg/m³ (Standard Physics)</div>
+          </div>
+          <div class="acard highlight">
+            <div class="acard-label">AI Corrected Density</div>
+            <div class="acard-val text-purple" id="at-rho-ml">1.8e-13</div>
+            <div class="acard-sub">kg/m³ (+0% ML Drag-Delta)</div>
+          </div>
+        </div>
+        <div class="drag-delta-visual">
+          <div class="dd-header">
+            <span>NRLMSISE-00 vs PINN Drag Correction</span>
+            <span id="dd-pct" class="dd-pct-badge">QUIET</span>
+          </div>
+
+          <!-- Row 1: Physics Baseline -->
+          <div class="dd-compare-row">
+            <div class="dd-compare-label">
+              <span class="dd-source-tag phys">NRLMSISE-00</span>
+              <span class="dd-source-sub">Standard Physics</span>
+            </div>
+            <div class="dd-bar-track">
+              <div class="dd-bar-segment seg-grey" id="dd-bar-phys" style="width:100%"></div>
+            </div>
+            <div class="dd-bar-pct" id="dd-phys-pct">100%</div>
+          </div>
+
+          <!-- Row 2: PINN AI Corrected -->
+          <div class="dd-compare-row">
+            <div class="dd-compare-label">
+              <span class="dd-source-tag ai">PINN AI</span>
+              <span class="dd-source-sub">Corrected Density</span>
+            </div>
+            <div class="dd-bar-track">
+              <div class="dd-bar-segment seg-grey" id="dd-bar-ai-base" style="width:100%"></div>
+              <div class="dd-bar-segment seg-glow" id="dd-bar-ml" style="width:0%"></div>
+            </div>
+            <div class="dd-bar-pct text-purple" id="dd-ai-pct">+0%</div>
+          </div>
+
+          <!-- Legend -->
+          <div class="dd-legend">
+            <span class="dd-legend-item"><span class="dd-legend-dot dot-teal-navy"></span>Physics range</span>
+            <span class="dd-legend-item"><span class="dd-legend-dot dot-glow"></span>AI extra drag detected</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Q3: PREDICTIVE DECAY & COLA (Bottom Left) -->
+    <section class="quadrant q-decay">
+      <div class="q-header">
+        <h2>📉 Predictive Decay & Collision Avoidance</h2>
+        <span class="q-meta">24-Hour Fleet Altitude Forecast vs Debris Radar</span>
+      </div>
+      <div class="q-body q-split">
+        <div class="decay-chart-container">
+          <canvas id="altitudeChart"></canvas>
+        </div>
+        <div class="cola-panel">
+          <div class="cola-header">
+            <h3>⚠️ COLA Conjunction Radar</h3>
+            <span class="cola-badge" id="cola-status">CLEAR</span>
+          </div>
+          <div class="cola-list" id="cola-list">
+            <div class="cola-empty">No collision threats detected in decay path.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Q4: M2M AUTONOMOUS MANEUVER (Bottom Right) -->
+    <section class="quadrant q-action">
+      <div class="q-header">
+        <h2>🚀 Autonomous Maneuver Command Center</h2>
+        <div class="auth-toggle">
+          <span class="auth-label" id="auth-label">HUMAN-ON-THE-LOOP</span>
+          <label class="switch">
+            <input type="checkbox" id="auto-auth-toggle" onchange="toggleAutonomy(this.checked)">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="q-body q-split-action">
+        <div class="fuel-tracker">
+          <h3 class="sub-h">Delta-V Budget Tracker (Selected Node)</h3>
+          <div class="fuel-item">
+            <div class="fuel-labels">
+              <span id="sel-sat-name">I-STAR-01</span>
+              <span id="sel-sat-fuel" class="text-cyan">98.2% (Argon)</span>
+            </div>
+            <div class="fuel-bar-wrap">
+              <div class="fuel-bar" id="fuel-bar" style="width:98.2%"></div>
+            </div>
+          </div>
+          <div class="fuel-stats">
+            <span>Required Burn: <strong id="req-dv" class="text-amber">0.0 m/s</strong></span>
+            <span>Fuel Cost: <strong id="req-fuel">0.0 kg</strong></span>
+          </div>
+          <button class="auth-btn" id="auth-btn" disabled onclick="authorizeUplink()">AUTHORIZE ISTAR UPLINK</button>
+        </div>
+
+        <div class="terminal-wrap">
+          <div class="term-header">
+            <span class="term-title">M2M AUTO-CORRECTION LOG</span>
+            <span class="term-blink">_</span>
+          </div>
+          <div class="term-body" id="action-log">
+            <div class="log-line info">[SYSTEM] I-STAR Autonomous Maneuver Engine Initialized.</div>
+            <div class="log-line info">[SYSTEM] Awaiting live telemetry connection...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SATELLITE TELEMETRY DRAWER -->
+  <div class="sat-drawer" id="sat-drawer">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title" id="drawer-sat-id">I-STAR-01</div>
+        <div class="drawer-role" id="drawer-sat-role">SAR Radar · Plane 1</div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-status-banner" id="drawer-status-banner">
+        <span class="drawer-status-icon" id="drawer-status-icon">🟢</span>
+        <span class="drawer-status-text" id="drawer-status-text">NOMINAL ORBIT</span>
+      </div>
+      <div class="drawer-section-title">Orbital Telemetry</div>
+      <div class="drawer-grid">
+        <div class="drawer-cell">
+          <div class="dc-label">Altitude</div>
+          <div class="dc-val" id="dw-alt">500.0 km</div>
+        </div>
+        <div class="drawer-cell">
+          <div class="dc-label">Velocity</div>
+          <div class="dc-val" id="dw-vel">7.61 km/s</div>
+        </div>
+        <div class="drawer-cell">
+          <div class="dc-label">Orbital Period</div>
+          <div class="dc-val" id="dw-period">94.5 min</div>
+        </div>
+        <div class="drawer-cell">
+          <div class="dc-label">Drag Drop</div>
+          <div class="dc-val text-red" id="dw-drop">0.00 km</div>
+        </div>
+      </div>
+      <div class="drawer-section-title">Digital Twin Config <span class="drawer-src">(istar_fleet_config.json)</span>
+      </div>
+      <div class="drawer-config-grid">
+        <div class="drawer-cfg-item"><span class="cfg-k">Mass</span><span class="cfg-v" id="dw-mass">— kg</span></div>
+        <div class="drawer-cfg-item"><span class="cfg-k">Propellant</span><span class="cfg-v" id="dw-fuel-type">—</span>
+        </div>
+        <div class="drawer-cfg-item"><span class="cfg-k">Isp</span><span class="cfg-v" id="dw-isp">— s</span></div>
+        <div class="drawer-cfg-item"><span class="cfg-k">Max Thrust</span><span class="cfg-v" id="dw-thrust">— mN</span>
+        </div>
+        <div class="drawer-cfg-item"><span class="cfg-k">Area (Cd)</span><span class="cfg-v" id="dw-area">—</span></div>
+        <div class="drawer-cfg-item"><span class="cfg-k">Role</span><span class="cfg-v" id="dw-role">—</span></div>
+      </div>
+      <div class="drawer-section-title">Subsystem Health</div>
+      <div class="health-list">
+        <div class="health-row"><span class="hr-label">Battery Voltage</span>
+          <div class="hr-bar-wrap">
+            <div class="hr-bar" id="dw-bat-bar" style="width:94%"></div>
+          </div><span class="hr-val" id="dw-bat">28.4 V</span>
+        </div>
+        <div class="health-row"><span class="hr-label">Fuel Mass</span>
+          <div class="hr-bar-wrap">
+            <div class="hr-bar" id="dw-fuel-bar" style="width:99%"></div>
+          </div><span class="hr-val text-cyan" id="dw-fuel-mass">— kg</span>
+        </div>
+        <div class="health-row"><span class="hr-label">Thruster Temp</span>
+          <div class="hr-bar-wrap">
+            <div class="hr-bar" id="dw-thruster-bar" style="width:40%;background:var(--amber)"></div>
+          </div><span class="hr-val" id="dw-thruster-temp">— °C</span>
+        </div>
+        <div class="health-row"><span class="hr-label">Solar Panels</span>
+          <div class="hr-bar-wrap">
+            <div class="hr-bar" id="dw-solar-bar" style="width:98%"></div>
+          </div><span class="hr-val text-green" id="dw-solar">98%</span>
+        </div>
+        <div class="health-row"><span class="hr-label">Comms Link</span>
+          <div class="hr-bar-wrap">
+            <div class="hr-bar" id="dw-comms-bar" style="width:85%;background:var(--cyan)"></div>
+          </div><span class="hr-val" id="dw-comms">-72 dBm</span>
+        </div>
+      </div>
+      <div class="drawer-section-title">Δ-V Calculation (Tsiolkovsky Rocket Equation)</div>
+      <div class="dv-panel">
+        <div class="dv-row"><span>Required Δh</span><strong id="dw-dh">0.00 km</strong></div>
+        <div class="dv-row"><span>Required Δv</span><strong id="dw-dv">0.00 m/s</strong></div>
+        <div class="dv-row"><span>Burn Duration</span><strong id="dw-burn">0.0 s</strong></div>
+        <div class="dv-row"><span>Fuel Required</span><strong class="text-amber" id="dw-fuel-cost">0.000 kg</strong>
+        </div>
+        <div class="dv-row"><span>Fuel Remaining After</span><strong class="text-cyan" id="dw-fuel-after">— kg</strong>
+        </div>
+      </div>
+      <!-- RIPPLE SIMULATE BUTTON — shown only when burn is needed -->
+      <button class="ripple-trigger-btn" id="ripple-trigger-btn" onclick="openRippleSimulator()" style="display:none">
+        ⚡ SIMULATE CONSTELLATION RIPPLE
+      </button>
+      <div class="drawer-section-title">Last Maneuver Record</div>
+      <div class="maneuver-log" id="dw-maneuver-log">
+        <span class="ml-empty">No maneuvers recorded this session.</span>
+      </div>
+      <div class="drawer-verify-state" id="drawer-verify" style="display:none">
+        <div class="verify-spinner">⏳</div>
+        <div class="verify-msg" id="verify-msg">Waiting for ISTAR telemetry confirmation...</div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-backdrop" id="drawer-backdrop" onclick="closeDrawer()"></div>
+
+  <!-- ══ MANEUVER RIPPLE SIMULATOR MODAL ══════════════════════════════════ -->
+  <div class="ripple-backdrop" id="ripple-backdrop" onclick="closeRippleSimulator()"></div>
+  <div class="ripple-modal" id="ripple-modal">
+    <div class="ripple-header">
+      <div>
+        <div class="ripple-title">⚡ MANEUVER RIPPLE SIMULATOR</div>
+        <div class="ripple-subtitle" id="ripple-subtitle">Select a satellite requiring a burn</div>
+      </div>
+      <button class="ripple-close-btn" onclick="closeRippleSimulator()">&#10005;</button>
+    </div>
+    <div class="ripple-summary" id="ripple-summary">
+      <div class="rs-card">
+        <div class="rs-label">Avg Inter-Sat Gap</div>
+        <div class="rs-row"><span class="rs-before" id="rs-gap-before">—</span><span class="rs-arrow">→</span><span
+            class="rs-after" id="rs-gap-after">—</span></div>
+        <div class="rs-delta" id="rs-gap-delta">—</div>
+      </div>
+      <div class="rs-card">
+        <div class="rs-label">Fleet Coverage Score</div>
+        <div class="rs-row"><span class="rs-before" id="rs-cov-before">—</span><span class="rs-arrow">→</span><span
+            class="rs-after" id="rs-cov-after">—</span></div>
+        <div class="rs-delta" id="rs-cov-delta">—</div>
+      </div>
+      <div class="rs-card">
+        <div class="rs-label">Satellites Affected</div>
+        <div class="rs-val" id="rs-impacted">—</div>
+      </div>
+      <div class="rs-card rs-warn-card" id="rs-gap-warn" style="display:none">
+        <div class="rs-label">⚠ Coverage Gap Detected</div>
+        <div class="rs-val text-red" id="rs-gap-window">—</div>
+      </div>
+    </div>
+    <div class="ripple-list-header">
+      <span>Satellite</span><span>Plane</span><span>Spacing Δ (km)</span><span>Coverage Impact</span><span>Risk
+        Level</span>
+    </div>
+    <div class="ripple-list" id="ripple-list"></div>
+    <div class="ripple-actions">
+      <button class="ripple-cancel-btn" onclick="closeRippleSimulator()">CANCEL</button>
+      <button class="ripple-confirm-btn" id="ripple-confirm-btn" onclick="confirmRippleBurn()">
+        🔥 CONFIRM &amp; AUTHORIZE BURN
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ 3D ORBITAL GLOBE PANEL ═════════════════════════════════ -->
+  <div class="globe-panel" id="globe-panel">
+    <div class="globe-header">
+      <div class="globe-header-left">
+        <span class="globe-title">🌍 I-STAR ORBITAL GLOBE</span>
+        <span class="globe-subtitle" id="globe-count">Loading satellites...</span>
+        <span class="globe-simtime-wrap">SIM <span class="globe-simtime" id="globe-simtime">--:--:-- UTC</span></span>
+      </div>
+      <div class="globe-header-right">
+        <div class="globe-speed-group">
+          <span class="globe-speed-label">SPEED</span>
+          <button class="globe-speed-btn" onclick="setGlobeSpeed(60)">60×</button>
+          <button class="globe-speed-btn active" onclick="setGlobeSpeed(120)">120×</button>
+          <button class="globe-speed-btn" onclick="setGlobeSpeed(600)">600×</button>
+        </div>
+        <div class="globe-layers">
+          <label class="globe-layer-toggle">
+            <input type="checkbox" checked onchange="globeToggleLayer('satellites', this.checked)">
+            <span class="gl-dot" style="background:#00d2ff"></span> Sats
+          </label>
+          <label class="globe-layer-toggle">
+            <input type="checkbox" checked onchange="globeToggleLayer('orbitLines', this.checked)">
+            <span class="gl-dot" style="background:rgba(0,210,255,0.6)"></span> Orbits
+          </label>
+          <label class="globe-layer-toggle">
+            <input type="checkbox" checked onchange="globeToggleLayer('groundTracks', this.checked)">
+            <span class="gl-dot" style="background:rgba(255,255,255,0.35)"></span> Ground
+          </label>
+        </div>
+        <div class="globe-legend">
+          <span class="gl-leg"><span class="gl-dot" style="background:#00d2ff"></span>P1</span>
+          <span class="gl-leg"><span class="gl-dot" style="background:#a855f7"></span>P2</span>
+          <span class="gl-leg"><span class="gl-dot" style="background:#22c55e"></span>P3</span>
+          <span class="gl-leg"><span class="gl-dot" style="background:#ffb800"></span>Drift</span>
+          <span class="gl-leg"><span class="gl-dot" style="background:#ff3366"></span>Crit</span>
+        </div>
+        <button class="globe-close-btn" onclick="closeGlobe()">&#10005; CLOSE</button>
+      </div>
+    </div>
+    <div id="cesiumContainer"></div>
+    <div class="globe-sat-info" id="globe-sat-info" style="display:none">
+      <div class="gsi-header">
+        <span class="gsi-id" id="gi-id">I-STAR-01</span>
+        <span class="gsi-status" id="gi-status">NOMINAL</span>
+      </div>
+      <div class="gsi-row"><span>Plane</span><strong id="gi-plane">—</strong></div>
+      <div class="gsi-row"><span>Role</span><strong id="gi-role">—</strong></div>
+      <div class="gsi-row"><span>Latitude</span><strong id="gi-lat">—</strong></div>
+      <div class="gsi-row"><span>Longitude</span><strong id="gi-lon">—</strong></div>
+      <div class="gsi-row"><span>Altitude</span><strong id="gi-alt">—</strong></div>
+      <div class="gsi-row"><span>Velocity</span><strong id="gi-vel">—</strong></div>
+      <button class="globe-follow-btn" id="globe-follow-btn">Follow Sat</button>
+    </div>
+  </div>
+  <!-- ══ END GLOBE PANEL ═════════════════════════════════════════ -->
+
+  <script src="app.js"></script>
+  <script src="globe.js"></script>
+</body>
+
+</html>
