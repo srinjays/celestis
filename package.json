@@ -1,0 +1,47 @@
+{
+  "name": "celestis",
+  "version": "2.0.0",
+  "description": "Celestis — Autonomous Satellite Drag Risk & Maneuver Platform",
+  "main": "electron/main.js",
+  "author": "Ajinkya Singh · Inceptrix SAT",
+  "license": "MIT",
+  "scripts": {
+    "electron": "electron .",
+    "start": "electron .",
+    "build:win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.inceptrix.celestis",
+    "productName": "Celestis",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "files": [
+      "electron/**/*",
+      "index.html",
+      "style.css",
+      "app.js",
+      "dataset.js",
+      "assets/**/*",
+      "!backend/**/*",
+      "!data_pipeline/**/*",
+      "!node_modules/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.0.0",
+    "three": "^0.183.2"
+  }
+}

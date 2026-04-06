@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+
+# Environment / Secrets
+.env
+.env.local
+backend/.env
+
+# Node
+node_modules/
+dist/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Model weights (large binaries)
+*.pkl
+*.pt
+*.pth
+
+# Data cache
+data_pipeline/__pycache__/
+data_pipeline/output/cache/
+
+# Build artifacts
+*.exe
+*.dmg
+LAUNCH_CELESTIS.bat
