@@ -14,15 +14,15 @@
 
 Engineered specifically to support **ISRO's planned I-STAR (Intelligence, Surveillance, Tracking, and Reconnaissance)** constellation of 36 satellites operating across three orbital planes at ~500 km Sun-Synchronous Orbit (SSO).
 
-[Key Innovations](#-scientific--technical-novelty) •
-[Complete Tech Stack](#-complete-technology-stack) •
-[Mathematical Foundations](#-mathematical--astrodynamics-formulation) •
-[PINN Architecture](#-physics-informed-neural-network-pinn-architecture) •
-[System Architecture](#-system-architecture) •
-[Empirical Benchmarks](#-empirical-benchmarks--validation) •
-[API Reference](#-backend-api-reference) •
-[Quickstart](#-quickstart--installation) •
-[Repository Layout](#-repository-structure)
+[Key Innovations](#key-innovations) •
+[Complete Tech Stack](#complete-technology-stack) •
+[Mathematical Foundations](#mathematical-foundations) •
+[PINN Architecture](#pinn-architecture) •
+[System Architecture](#system-architecture) •
+[Empirical Benchmarks](#empirical-benchmarks) •
+[API Reference](#api-reference) •
+[Quickstart](#quickstart) •
+[Repository Layout](#repository-structure)
 
 </div>
 
@@ -53,6 +53,7 @@ Operational space flight centers rely on semi-empirical thermospheric models inc
 
 ---
 
+<a id="complete-technology-stack"></a>
 ## 🛠️ Complete Technology Stack
 
 CELESTIS is built on an enterprise-grade, microservice-based architecture spanning five distinct technological layers:
@@ -91,6 +92,7 @@ CELESTIS is built on an enterprise-grade, microservice-based architecture spanni
 
 ---
 
+<a id="key-innovations"></a>
 ## 🔬 Scientific & Technical Novelty
 
 CELESTIS introduces four primary intellectual and engineering contributions that distinguish it from conventional space situational awareness (SSA) platforms:
@@ -167,6 +169,7 @@ When drag-induced altitude decay exceeds operational deadbands ($\pm 2.5\text{ k
 
 ---
 
+<a id="mathematical-foundations"></a>
 ## 🧮 Mathematical & Astrodynamics Formulation
 
 ### 1. Thermospheric Barometric Distribution & Scale Height
@@ -203,6 +206,7 @@ $$P_c \approx \frac{R_C^2}{2\sigma^2} \exp\left(-\frac{d_{\text{miss}}^2}{2\sigm
 
 ---
 
+<a id="pinn-architecture"></a>
 ## 🧠 Physics-Informed Neural Network (PINN) Architecture
 
 ```
@@ -244,6 +248,7 @@ $$P_c \approx \frac{R_C^2}{2\sigma^2} \exp\left(-\frac{d_{\text{miss}}^2}{2\sigm
 
 ---
 
+<a id="system-architecture"></a>
 ## 🏗️ System Architecture
 
 ```mermaid
@@ -285,6 +290,7 @@ flowchart TB
 
 ---
 
+<a id="empirical-benchmarks"></a>
 ## 📊 Empirical Benchmarks & Validation
 
 The CELESTIS AI models were trained and validated on real orbital tracking data derived from Two-Line Element (TLE) histories from Space-Track.org across **22 operational satellites** and **26 distinct geomagnetic storm events** spanning two solar cycles (2003–2024).
@@ -313,6 +319,7 @@ To evaluate true generalizability, models were tested against completely unseen 
 
 ---
 
+<a id="api-reference"></a>
 ## 📡 Backend API Reference
 
 The FastAPI backend runs on `http://127.0.0.1:8001` and provides high-performance asynchronous REST endpoints:
@@ -331,6 +338,7 @@ Interactive Swagger API Documentation is available at `http://127.0.0.1:8001/doc
 
 ---
 
+<a id="quickstart"></a>
 ## ⚡ Quickstart & Installation
 
 ### Prerequisites
@@ -391,6 +399,7 @@ npm start
 
 ---
 
+<a id="repository-structure"></a>
 ## 📁 Repository Structure
 
 ```
