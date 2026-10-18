@@ -1,0 +1,16 @@
+[
+  {
+    "label": "Train",
+    "mae_km": 0.07351,
+    "r2": 0.564,
+    "violations": 24,
+    "n_samples": 253
+  },
+  {
+    "label": "OOD",
+    "mae_km": 0.14147,
+    "r2": 0.3922,
+    "violations": 8,
+    "n_samples": 41
+  }
+]

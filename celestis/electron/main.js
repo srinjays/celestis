@@ -25,7 +25,7 @@ function startBackend() {
     console.log('[CELESTIS] Starting Python backend...');
     backendProc = spawn(
         pythonExe,
-        ['-m', 'uvicorn', 'api:app', '--host', '127.0.0.1', '--port', '4000'],
+        ['-m', 'uvicorn', 'api:app', '--host', '127.0.0.1', '--port', '8001'],
         { cwd: backendDir, stdio: 'pipe' }
     );
     backendProc.stdout.on('data', d => process.stdout.write('[backend] ' + d));
@@ -34,10 +34,10 @@ function startBackend() {
 }
 
 // ── Wait for backend health check ────────────────────────────────────────────
-function waitForBackend(retries = 30) {
+function waitForBackend(retries = 60) {
     return new Promise((resolve) => {
         const attempt = () => {
-            http.get('http://127.0.0.1:4000/health', res => {
+            http.get('http://127.0.0.1:8001/health', res => {
                 if (res.statusCode === 200) { resolve(true); }
                 else retry();
             }).on('error', retry);

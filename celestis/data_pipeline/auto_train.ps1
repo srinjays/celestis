@@ -6,13 +6,13 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $PYTHON = "C:\Users\AJINKYA SINGH\AppData\Local\Programs\Python\Python314\python.exe"
-$ROOT   = Split-Path -Parent $PSScriptRoot
-$CSV    = "$ROOT\data_pipeline\output\ground_truth_dataset.csv"
-$LOG    = "$ROOT\data_pipeline\output\auto_train.log"
-$RUN    = 0
+$ROOT = Split-Path -Parent $PSScriptRoot
+$CSV = "$ROOT\data_pipeline\output\ground_truth_dataset.csv"
+$LOG = "$ROOT\data_pipeline\output\auto_train.log"
+$RUN = 0
 
 function Log($msg) {
-    $ts   = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $line = "[$ts] $msg"
     Write-Host $line -ForegroundColor Cyan
     Add-Content -Path $LOG -Value $line -Encoding UTF8
@@ -58,10 +58,10 @@ while ($true) {
         $bench = Get-Content $benchFile -Raw | ConvertFrom-Json
         foreach ($r in $bench) {
             $label = $r.label
-            $mae   = [math]::Round($r.mae_total_km, 4)
-            $r2    = [math]::Round($r.r2_total, 4)
-            $viol  = $r.physics_violations
-            $n     = $r.n_samples
+            $mae = [math]::Round($r.mae_total_km, 4)
+            $r2 = [math]::Round($r.r2_total, 4)
+            $viol = $r.physics_violations
+            $n = $r.n_samples
             Log "  RESULT [$label]"
             Log "    MAE        : $mae km"
             Log "    R-squared  : $r2"

@@ -1,0 +1,35 @@
+Loading ground truth...
+  Rows: 294  Cols: 21
+Enriched CSV saved: d:\inceptrix_sat\celestis\data_pipeline\output\ground_truth_enriched.csv
+Columns now: ['storm_label', 'satellite', 'norad', 'onset_date', 'end_date', 'kp_max_real', 'f107_real', 'cme_km_s', 'flare_enc', 'storm_duration_h', 'alt_before_km', 'alt_after_km', 'dh_true_km', 'dh_physics_km', 'residual_km', 'delta_n', 'epoch_before', 'epoch_after', 'storm_phase', 'storm_class', 'split', 'tec_quiet_tecu', 'tec_storm_tecu', 'tec_delta_tecu', 'tec_ratio', 'iono_storm_m', 'iono_delta_m']
+
+TEC by Kp bucket:
+  G1(Kp<4): n= 59 | quiet=63.8T | storm=71.9T | ratio=1.132 | iono_storm=11.652m
+  G2(Kp4-6): n= 52 | quiet=57.9T | storm=67.0T | ratio=1.163 | iono_storm=10.860m
+  G3(Kp6-7.5): n= 79 | quiet=64.3T | storm=79.9T | ratio=1.237 | iono_storm=12.946m
+  G4-G5(Kp>7.5): n=104 | quiet=73.1T | storm=104.3T | ratio=1.412 | iono_storm=16.894m
+
+Starting PINN training...
+  Train rows: 253  OOD rows: 41
+  Device: CPU  Batch: 32  Features: 11
+ Epoch         Loss    Alpha
+     1     0.220502    0.501
+   100     0.085152    0.558
+   200     0.088023    0.617
+   300     0.099721    0.675
+   400     0.085662    0.733
+   500     0.086058    0.792
+   600     0.105050    0.850
+
+=== EVALUATION (TEC-ENRICHED PINN) ===
+  Train: MAE=0.09110km  R2=0.2944  violations=42/253
+  OOD: MAE=0.12585km  R2=0.6291  violations=9/41
+
+=== COMPARISON vs BASELINE ===
+  Train: OLD R2=0.1267  NEW R2=0.2944  (+0.1677)
+  OOD: OLD R2=0.6305  NEW R2=0.6291  (-0.0014)
+
+Saved pinn_model_tec.pt
+Saved pinn_benchmark_tec.json
+
+DONE. Next: update backend/api.py to load pinn_model_tec.pt

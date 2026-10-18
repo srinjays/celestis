@@ -2,7 +2,7 @@
 // I-STAR Mission Control — Core Logic
 // ═══════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = 'http://127.0.0.1:4000';
+const BACKEND_URL = 'http://127.0.0.1:8001';
 const NUM_SATS = 36;
 let liveMode = false;
 let autoAuth = false;

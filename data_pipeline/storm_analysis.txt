@@ -1,0 +1,28 @@
+=== IONO TEC BY SESSION DATE ===
+  02_01_2025 | rows= 4655 | iono_mean=11.2725m | iono_max=11.7513m | spike_max=0.7712m | clk_drift=1076.7
+  09_01_2025 | rows= 5578 | iono_mean=9.6145m | iono_max=10.7061m | spike_max=0.8272m | clk_drift=1092.0
+  11_01_2025 | rows= 9472 | iono_mean=10.6920m | iono_max=11.4940m | spike_max=1.0666m | clk_drift=1093.7
+  15_01_2025 | rows= 7666 | iono_mean=8.5478m | iono_max=9.5688m | spike_max=0.5438m | clk_drift=1096.9
+  17_01_2025 | rows=  599 | iono_mean=10.6927m | iono_max=10.8236m | spike_max=0.2775m | clk_drift=1093.2
+  20_01_2025 | rows= 1865 | iono_mean=11.2449m | iono_max=11.3485m | spike_max=0.2891m | clk_drift=1104.3
+  28_01_2025 | rows= 2037 | iono_mean=10.2838m | iono_max=10.8626m | spike_max=0.6496m | clk_drift=1085.5
+  30_01_2025 | rows= 5841 | iono_mean=11.0883m | iono_max=11.8593m | spike_max=0.7049m | clk_drift=1066.5
+
+=== STORM ANALYSIS: Jan 18 2026 X-class CME (1700 km/s, 25h travel) ===
+  Quiet baseline  (Jan 02-17): 10.1639 m avg iono = 62.7 TECU
+  Storm window    (Jan 20-30): 10.8723 m avg iono = 67.1 TECU
+  Elevation vs baseline:       +0.7084m  (7.0% increase)
+
+  Peak iono TEC   : 11.8593 m = 73.2 TECU  @ session 30_01_2025
+  Peak iono spike : 1.0666 m  @ session 11_01_2025
+  Peak clock drift: 1106.34 ns/s  @ session 20_01_2025
+
+=== STORM SESSION COMPARISON ===
+  02_01_2025 : 69.6 TECU (quiet) *** STORM PEAK ***
+  09_01_2025 : 59.3 TECU (quiet)
+  11_01_2025 : 66.0 TECU (quiet)
+  15_01_2025 : 52.8 TECU (quiet)
+  17_01_2025 : 66.0 TECU (quiet)
+  20_01_2025 : 69.4 TECU (storm window)
+  28_01_2025 : 63.5 TECU (storm window)
+  30_01_2025 : 68.4 TECU (storm window)
